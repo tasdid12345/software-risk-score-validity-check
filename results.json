@@ -1,0 +1,29 @@
+{
+  "question": "Does a class-balanced, CV-tuned tree ensemble rank software modules by future costly-maintenance risk better than a standard random-forest score on the public NASA KC1 defect dataset?",
+  "method": "Stand-in experiment on OpenML 'kc1' (defect label as proxy for costly maintenance). One stratified 75/25 split (seed 42). Baseline: 300-tree random forest raw probabilities. Improved: average of a class-balanced LightGBM and a class-balanced random forest, each tuned by 5-fold ROC-AUC CV on the training split only. Models repeated over seeds 42, 43, 44.",
+  "dataset": {
+    "name": "kc1 (OpenML)",
+    "source_url": "https://www.openml.org/search?type=data&q=kc1",
+    "n_rows": 2109,
+    "n_train": 1581,
+    "n_test": 528,
+    "same_as_paper": false,
+    "baseline_is_papers_method": false
+  },
+  "metric_name": "ROC-AUC on test split",
+  "higher_is_better": true,
+  "baseline": "Standard 300-tree random forest; raw predicted defect probability used as risk score.",
+  "improved": "Equal-weight probability average of a class-balanced LightGBM and a class-balanced random forest, hyper-parameters chosen by 5-fold CV ROC-AUC on training data only.",
+  "metrics": {
+    "baseline_score": 0.8364595865689598,
+    "improved_score": 0.8259506361879763,
+    "improvement": -0.01050895038098354,
+    "baseline_score_std": 0.0017149081572885216,
+    "improved_score_std": 0.0019717971761647798,
+    "baseline_brier": 0.09883905201224803,
+    "improved_brier": 0.1363289237681408,
+    "baseline_f1": 0.7005747088757741,
+    "improved_f1": 0.709961953324945
+  },
+  "notes": "KC1 defect label is a proxy for costly maintenance, not the paper's own data. Single train/test split; seeds 42-44 vary only model randomness. Test set used once, at the end, never for tuning. Isotonic calibration was dropped from the improved model because it produces tied scores that reduce ROC-AUC resolution. Baseline and shared preprocessing are unchanged. Timeout is best-effort via socket default timeout, since openml exposes no per-request timeout. Small dataset (about 2k rows): differences may not be statistically significant."
+}
