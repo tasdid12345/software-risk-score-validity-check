@@ -1,29 +1,15 @@
-# Class-balanced LightGBM vs random-forest risk ranking on NASA KC1
+# KC1 costly-maintenance risk: baseline RF vs CV-tuned ensemble
 
-Software sustainability models, such as the service-oriented approach in "Embedding the concept of service oriented architecture into software sustainability evaluation model" (2017), need ways to flag modules likely to become costly to maintain. A ranking score that orders modules by risk helps teams focus review and refactoring effort. This experiment asks whether a better-calibrated, class-balanced gradient-boosting score ranks modules better than a standard random-forest score.
+Stand-in experiment on OpenML `kc1` (defect label used as a proxy for costly maintenance).
 
-**Question:** Does a class-balanced, calibrated gradient-boosting model rank software modules by future costly-maintenance risk better than a standard random-forest score on the public NASA KC1 defect dataset?
+- Split: one stratified 75/25 split, seed 42. Median imputation fitted on train only.
+- Baseline (unchanged): 300-tree random forest, raw predicted probabilities as the risk score.
+- Improved: equal-weight probability average of a class-balanced LightGBM and a class-balanced random forest. Each is tuned by 5-fold ROC-AUC cross-validation on the training split only. The isotonic step was removed.
+- Metric: ROC-AUC on the test split, averaged over seeds 42, 43, 44.
 
-**Dataset:** OpenML "kc1" (static code metrics per module, defect label used as a proxy for costly maintenance), fetched with the `openml` Python package. This is a public stand-in dataset, not the paper's own data. One stratified 75/25 split with seed 42.
+Run: `pip install -r requirements.txt && python analysis.py`. This writes `results.json` and `figures/baseline_vs_improved.png`.
 
-**Baseline:** a standard 300-tree random forest. Its raw predicted probabilities are the risk score.
-
-**Improved model:** a class-balanced LightGBM. Hyper-parameters are chosen by 5-fold cross-validation on the training part only. Isotonic calibration is fitted on out-of-fold training predictions.
-
-**Metrics:** main metric is ROC-AUC on the test split. Secondary metrics are the Brier score and macro-F1 at a 0.5 threshold. Both models are repeated over seeds 42, 43 and 44.
-
-## How to run
-
-```bash
-pip install -r requirements.txt
-python analysis.py
-```
-
-Requires internet access to openml.org. Runtime is a few minutes on CPU.
-
-## Results
-
-Results are written to `results.json`. A chart is saved to `figures/baseline_vs_improved.png`.
+The test set is used only for the final evaluation. Small dataset (about 2k rows), so differences may not be statistically significant.
 
 ## Reference
 
