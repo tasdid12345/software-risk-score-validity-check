@@ -12,6 +12,26 @@ Method:
 
 Caveat: KC1's defect label is a proxy for costly maintenance. The dataset is small, so differences may not be significant.
 
+## Results (latest run)
+
+On the public OpenML KC1 dataset (defect label as a proxy for costly maintenance), a standard 300-tree random forest on raw probabilities reached a test ROC-AUC of 0.836, while my class-balanced, CV-tuned LightGBM/RF ensemble reached 0.837, a negligible gain of 0.001 within seed-to-seed spread.
+
+| Metric | Value |
+|---|---|
+| baseline_score | 0.8365 |
+| improved_score | 0.8375 |
+| improvement | 0.001003 |
+| baseline_score_std | 0.001715 |
+| improved_score_std | 0.001343 |
+| baseline_brier | 0.09884 |
+| improved_brier | 0.09811 |
+| baseline_f1 | 0.7006 |
+| improved_f1 | 0.6535 |
+
+Run on 2026-10-21. Full output: [results.json](results.json) · [run.log](run.log)
+
+Notes: KC1 defect label is a proxy for costly maintenance, not the paper's own data. Single train/test split; seeds 42-44 vary only model randomness. Test set used once, at the end, never for tuning or model selection. Model-form selection (LightGBM vs RF vs average) uses out-of-fold CV AUC on the training split only. Isotonic calibration is not used. Baseline and shared preprocessing are unchanged. Timeout is best-effort via socket default timeout, since openml exposes no per-request timeout. Small dataset (about 2k rows): differences may not be statistically significant.
+
 ## Reference
 
 This project is motivated by the following paper:
